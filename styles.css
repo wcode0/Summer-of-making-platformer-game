@@ -14,3 +14,8 @@
     height: 10vw;
     background: rgba(255,0,0)
 }
+#sword{
+    position: absolute;
+    width: 20vw;
+    height: 20vw;
+}
