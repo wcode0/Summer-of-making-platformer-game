@@ -1,21 +1,26 @@
 #player{
-    left: 10vw;
-    top: 80vh;
     position: absolute;
     width: 10vw;
     height: 10vw;
-    background: rgba(0, 0,255)
+    background: rgb(0, 0,255)
 }
 #enemy{
-    right: 10vw;
     top: 80vh;
     position: absolute;
     width: 10vw;
     height: 10vw;
-    background: rgba(255,0,0)
+    background: rgb(255,0,0)
 }
 #sword{
     position: absolute;
-    width: 20vw;
-    height: 20vw;
+    width: 10vw;
+    height: 1vw;
+    background-color: purple;
+}
+#box{
+    width:10vw;
+    height:10vw;
+    position: absolute;
+    background-color: greenyellow;
+    
 }

@@ -1,81 +1,74 @@
-let x = 0;
-let y = 0;
-let enemyx = 89;
-const speed = 0.5; 
 const player = document.getElementById("player");
 const enemy = document.getElementById("enemy");
 const sword = document.getElementById("sword");
+const box = document.getElementById("box");
+
+const speed = 0.5;
+const gravity = 0.2;
+const jumpStrength = -5;
+const groundY = 80;
+
+
+const playerWidth = 10;
+const leftBound = 0;
+const rightBound = 90;
+
 let keys = {
-  KeyW: false,  // was ArrowUp
-  KeyS: false,  // was ArrowDown
-  KeyA: false,  // was ArrowLeft
-  KeyD: false,   // was ArrowRight
-  ArrowRight: false,
-  ArrowLeft : false
+  KeyW: false,
+  KeyD: false,
+  KeyA: false,
 };
-window.addEventListener('click', () => {
-  location.reload();
-});
 
-// Listen for key presses
+let x = 0;
+let y = groundY;
+let enemyx = 89;
+let enemyspeed = 0.25;
+let velocity = 0;
+let isJumping = true;
+
+const boxX = 50;
+const boxY = 80;
+const boxWidth = 10;
 window.addEventListener("keydown", (event) => {
-  if (event.code in keys) {
-    keys[event.code] = true;
-  }
+  if (event.code in keys) keys[event.code] = true;
 });
 
-// Listen for key releases
 window.addEventListener("keyup", (event) => {
-  if (event.code in keys) {
-    keys[event.code] = false;
-  }
+  if (event.code in keys) keys[event.code] = false;
 });
-let enemyspeed =0.25
-let grav = 0.2
-let velocity = 0
-let strength = -5
-let isJumping = true
-let swordAngle = 0
-const ground = 80
-
+box.style.top = boxY + "vh";
+box.style.left = boxX + "vw";
+box.style.width = boxWidth + "vw"
+box.style.height = boxWidth + "vw";
 function update() {
-  enemyx+=enemyspeed;
-  player.style.height = "10vw";
-  if (keys.KeyW && !isJumping){
-    velocity = strength
-    isJumping = true
+  enemyx += enemyspeed;
+  player.style.height = playerWidth + "vw";
+
+  if (keys.KeyW && !isJumping) {
+    velocity = jumpStrength;
+    isJumping = true;
   }
 
-  velocity += grav;
+  velocity += gravity;
   y += velocity;
 
-  if (y >= ground) {
-    y = ground;
+  if (y >= groundY) {
+    y = groundY;
     velocity = 0;
     isJumping = false;
   }
-  
-  if (keys.KeyA && x > 0) x -= speed;
-  if (keys.KeyD && x < 90) x += speed;
-  if (keys.KeyS) player.style.height = "5vw";
-  //enemy movement
-  if(enemyx <= 0 || enemyx >= 90){ 
-    enemyspeed*=-1}
-  //woah that was easier than I thought
-  //sword moving time!!!!!!
-  sword.style.left = x + 3 + "vw"
-  sword.style.top = y - 25 + "vh"
-  //sword rotation
-  if(keys.ArrowLeft){
-    swordAngle -=1
-  }
-  if(keys.ArrowRight){
-    swordAngle+=1;
-  }
-  sword.style.rotate = swordAngle + "deg"
+
+  if (keys.KeyA && x > leftBound ) x -= speed;
+  if (keys.KeyD && x < rightBound && (x < boxX - boxWidth)) x += speed;
+
+  if (enemyx <= leftBound || enemyx >= rightBound) enemyspeed *= -1;
+
+  sword.style.left = x + 5 + "vw";
+  sword.style.top = y - 5 + "vh";
   player.style.left = x + "vw";
   player.style.top = y + "vh";
   enemy.style.left = enemyx + "vw";
+
   requestAnimationFrame(update);
 }
 
