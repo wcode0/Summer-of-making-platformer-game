@@ -1,26 +1,35 @@
 #player{
+    background-color: blue;
     position: absolute;
-    width: 10vw;
-    height: 10vw;
-    background: rgb(0, 0,255)
 }
-#enemy{
-    top: 80vh;
-    position: absolute;
-    width: 10vw;
-    height: 10vw;
-    background: rgb(255,0,0)
+#game{
+    width:1080px;
+    height:720px;
+    margin: auto;
+    background: skyblue;
+    position: relative;
+    overflow:hidden;
 }
-#sword{
+#ground {
+    color: lime;
+    width: 1080px;
+    height: 100px;
+    left: 0;
     position: absolute;
-    width: 10vw;
-    height: 1vw;
-    background-color: purple;
+    background-color: lime; /* Also add background so it's visible */
 }
-#box{
-    width:10vw;
-    height:10vw;
-    position: absolute;
-    background-color: greenyellow;
-    
+
+html, body {
+  height: 100%;            /* Make sure body fills the viewport height */
+  margin: 0;               /* Remove default margins */
+  display: flex;           /* Enable flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center;     /* Center vertically */
+  background: black;       /* Your existing background */
+}
+.Block {
+  position: absolute;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.6);
+  transition: all 0.3s ease;
 }
