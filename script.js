@@ -1,17 +1,21 @@
 const player = document.getElementById("player");
 const ground = document.getElementById("ground");
+const gun = document.getElementById("gun");
+const shot = document.getElementById("gunshot")
 const gravity = 1;
 const speed = 6;
 const groundY = 620;
 const playerHeight = 50;
 const playerWidth = 50;
 const jumpStrength = -20;
-
+const leftbound = 0;
+const rightbound = 1080 -playerWidth;
+const gunWidth = 200;
+const gunHeight = 100;
 let velocity = 0;
 let playerX = 0;
 let playerY = 620;
 let isJumping = false;
-
 const blocks = [];
 let sides = {
   left : false,
@@ -34,6 +38,12 @@ window.addEventListener("keydown", (event) => {
 window.addEventListener("keyup", (event) => {
   if (event.code in keys) keys[event.code] = false;
 });
+window.addEventListener("keydown", function(event){
+  if(event.code === "Space"){
+    shot.currentTime = 0.1; 
+    shot.play();
+  }
+});
 
 class Block {
   constructor(width, height, x, y, color, containerId = "game") {
@@ -54,11 +64,8 @@ class Block {
     blocks.push(this);
   }
 }
-
-const redBlock = new Block(100, 100, 200, 520, "red");
-const blueBlock = new Block(100, 100, 500, 420, "blue");
+const redBlock = new Block(100, 100, 200, 520, "indigo");
 function checkCollision() {
-  // Reset sides every frame
   sides.left = false;
   sides.right = false;
   sides.top = false;
@@ -75,7 +82,6 @@ function checkCollision() {
                         playerBottom > block.y;
 
     if (isColliding) {
-      // Top collision (landing on block)
       if (velocity > 0 &&
           playerBottom > block.y &&
           playerY < block.y &&
@@ -86,14 +92,10 @@ function checkCollision() {
         isJumping = false;
         sides.top = true;
       } else {
-        // Only check side collisions if not landing on top
-        // Right collision
         if (playerRight > block.x && playerX < block.x &&
             playerBottom > block.y && playerY < blockBottom) {
           sides.right = true;
         }
-
-        // Left collision
         if (playerX < blockRight && playerRight > blockRight &&
             playerBottom > block.y && playerY < blockBottom) {
           sides.left = true;
@@ -107,8 +109,12 @@ function checkCollision() {
 }
 function update() {
   checkCollision()
-  if (keys.KeyA && sides.left === false) playerX -= speed;
-  if (keys.KeyD && sides.right === false) playerX += speed;
+  if (keys.KeyA && sides.left === false && playerX > leftbound){
+     playerX -= speed
+    gun.style.transform = "scaleX(-1)"}
+  if (keys.KeyD && sides.right === false && playerX < rightbound){
+    gun.style.transform = "scaleX(1)";
+   playerX += speed}
   if (keys.KeyW && isJumping === false) {
     velocity += jumpStrength;
     isJumping = true;
@@ -124,6 +130,8 @@ function update() {
 
   player.style.left = playerX + "px";
   player.style.top = playerY + "px";
+  gun.style.left = (playerX + (playerWidth / 2) - (gunWidth / 2)) + "px";
+  gun.style.top  = (playerY + (playerHeight / 2) - (gunHeight / 2)) + "px";
 
   requestAnimationFrame(update);
 }

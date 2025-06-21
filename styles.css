@@ -11,12 +11,12 @@
     overflow:hidden;
 }
 #ground {
-    color: lime;
+    color: green;
     width: 1080px;
     height: 100px;
     left: 0;
     position: absolute;
-    background-color: lime; /* Also add background so it's visible */
+    background-color: green; /* Also add background so it's visible */
 }
 
 html, body {
@@ -32,4 +32,13 @@ html, body {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0,0,0,0.6);
   transition: all 0.3s ease;
+}
+#gun {
+  width: 200px;
+  height: 100px;
+  position: absolute;
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Type_56_mod02_noBG.png/960px-Type_56_mod02_noBG.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
