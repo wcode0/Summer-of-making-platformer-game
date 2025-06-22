@@ -26,6 +26,7 @@ let keys = {
   KeyW: false,
   KeyD: false,
   KeyA: false,
+  Space: false,
 };
 
 player.style.height = playerHeight + "px";
@@ -38,12 +39,7 @@ window.addEventListener("keydown", (event) => {
 window.addEventListener("keyup", (event) => {
   if (event.code in keys) keys[event.code] = false;
 });
-window.addEventListener("keydown", function(event){
-  if(event.code === "Space"){
-    shot.currentTime = 0.1; 
-    shot.play();
-  }
-});
+
 
 class Block {
   constructor(width, height, x, y, color, containerId = "game") {
@@ -118,6 +114,10 @@ function update() {
   if (keys.KeyW && isJumping === false) {
     velocity += jumpStrength;
     isJumping = true;
+  }
+  if(keys.Space){
+    shot.currentTime = 0.5; 
+    shot.play();
   }
   velocity += gravity;
   playerY += velocity;
