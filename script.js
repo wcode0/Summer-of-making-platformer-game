@@ -5,7 +5,7 @@ const shot = document.getElementById("gunshot");
 const reload =document.getElementById("reload")
 const counter =document.getElementById("counter")
 const star = document.getElementById("star");
-const gravity = 1;
+const gravity = 0.8;
 const speed = 6;
 const groundY = 620;
 const playerHeight = 50;
@@ -23,6 +23,8 @@ let playerY = 620;
 let isJumping = false;
 let mag = 30;
 let nonMag = 270;
+let isReloading = false;
+const enemies = [];
 const blocks = [];
 let sides = {
   left : false,
@@ -66,6 +68,26 @@ class Block {
     blocks.push(this);
   }
 }
+class Enemy {
+  constructor(health, x, y, speed, containerId = "game"){
+    this.health = health;
+    this.speed = speed;
+    this.x = x;
+    this.y = y;
+    this.element = document.createElement("div");
+    this.element.classList.add("Enemy");
+    this.element.style.left = x + "px";
+    this.element.style.top = y + "px";
+    this.element.style.width = "50px";
+    this.element.style.height = "50px";
+    this.element.style.position = "absolute";
+    this.element.style.backgroundColor = "red";
+    const container = document.getElementById(containerId);
+    container.appendChild(this.element);
+    enemies.push(this);
+  }
+}
+new Enemy(10, 100, 200, 10);
 function checkCollision() {
   sides.left = false;
   sides.right = false;
@@ -108,9 +130,13 @@ function checkCollision() {
     }
   }
 }
+
 new Block(100, 50, 300, 500, "red");
 new Block(100, 50, 500, 300, "red");
 function update() {
+  for(enemy of enemies){
+    enemy.style.top+=enemy.speed;
+  }
   counter.innerText = mag + ", " + nonMag;
   checkCollision()
   if (keys.Space && canShoot && mag >=1) {
@@ -128,11 +154,19 @@ function update() {
     canShoot = true;
   }, shootCooldown);
 }
-  if(keys.KeyR && nonMag >=0){
+  if(keys.KeyR && nonMag >=0 && !isReloading){
+    isReloading = true;
     canShoot = false;
-    setTimeout(function() {nonMag-=30-mag; mag = 30; canShoot = true}, 500)
     reload.currentTime = 0;
     reload.play();
+    setTimeout(function() {
+    let usedBullets = 30 - mag;
+    if (nonMag < usedBullets) usedBullets = nonMag;
+    nonMag -= usedBullets;
+    mag += usedBullets;
+    canShoot = true;
+    isReloading = false;
+  }, 500);
   }
   if (keys.KeyA && sides.left === false && playerX > leftbound){
      playerX -= speed
