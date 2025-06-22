@@ -60,7 +60,6 @@ class Block {
     blocks.push(this);
   }
 }
-const redBlock = new Block(100, 100, 200, 520, "indigo");
 function checkCollision() {
   sides.left = false;
   sides.right = false;
@@ -103,6 +102,8 @@ function checkCollision() {
     }
   }
 }
+new Block(100, 50, 300, 500, "red");
+new Block(100, 50, 500, 300, "red");
 function update() {
   checkCollision()
   if (keys.KeyA && sides.left === false && playerX > leftbound){
