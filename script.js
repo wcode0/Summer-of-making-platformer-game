@@ -62,6 +62,7 @@ class Block {
     this.element.style.width = width + "px";
     this.element.style.height = height + "px";
     this.element.style.backgroundColor = color;
+    
 
     const container = document.getElementById(containerId);
     container.appendChild(this.element);
@@ -82,12 +83,28 @@ class Enemy {
     this.element.style.height = "50px";
     this.element.style.position = "absolute";
     this.element.style.backgroundColor = "red";
+    this.element.style.fontSize = "20px";
+    this.element.style.color = "white";
+    this.element.style.textAlign = "center";
+    this.element.style.lineHeight = "50px";
     const container = document.getElementById(containerId);
     container.appendChild(this.element);
     enemies.push(this);
   }
 }
-new Enemy(10, 100, 200, 10);
+function check_shot (){
+  for(enemy of enemies){
+    if((gun.style.transform === "scaleX(1)" && enemy.x > playerX && enemy.y === playerY) || (gun.style.transform === "scaleX(-1)" && enemy.x < playerX && enemy.y === playerY )){
+      enemy.health -=1;
+      if (enemy.health <= 0) {
+      enemy.element.remove(); // remove the div from the DOM
+      enemies.splice(enemies.indexOf(enemy), 1); // remove from array
+    } else {
+      enemy.element.innerText = enemy.health;
+}}}
+
+    }
+new Enemy(10, 500, 570, 3);
 function checkCollision() {
   sides.left = false;
   sides.right = false;
@@ -135,7 +152,11 @@ new Block(100, 50, 300, 500, "red");
 new Block(100, 50, 500, 300, "red");
 function update() {
   for(enemy of enemies){
-    enemy.style.top+=enemy.speed;
+    enemy.x += enemy.speed;
+    enemy.element.style.left = enemy.x + "px";
+  }
+  if(enemy.x >= rightbound || enemy.x <= leftbound){
+    enemy.speed *=-1;
   }
   counter.innerText = mag + ", " + nonMag;
   checkCollision()
@@ -145,6 +166,7 @@ function update() {
   shot.currentTime = 0.5;
   shot.play();
   star.style.opacity = 1;
+  check_shot();
 
   setTimeout(() => {
     star.style.opacity = 0;
@@ -199,10 +221,8 @@ function update() {
 
 
   if (gun.style.transform === "scaleX(1)") {
-
     star.style.left = (playerX + (playerWidth / 2) + (gunWidth / 2)) -50 + "px";
   } else {
- 
     star.style.left = (playerX + (playerWidth / 2) - (gunWidth / 2) - star.offsetWidth)  +50 + "px";
   }
   requestAnimationFrame(update)

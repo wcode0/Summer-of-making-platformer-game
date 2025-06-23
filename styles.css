@@ -36,6 +36,10 @@ html, body {
 .block {
   position: absolute;
 }
+.enemy{
+  position: absolute;
+  font-size: 100%;
+}
 #gun {
   width: 200px;
   height: 100px;
@@ -44,6 +48,7 @@ html, body {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+  transform: scaleX(1);
 }
 #star {
   position: absolute;
