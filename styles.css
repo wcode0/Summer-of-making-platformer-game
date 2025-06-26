@@ -2,13 +2,16 @@
     background-color: blue;
     position: absolute;
 }
-#game{
-    width:1080px;
-    height:720px;
-    margin: auto;
-    background: skyblue;
-    position: relative;
-    overflow:hidden;
+#game {
+  width: 1080px;
+  height: 720px;
+  margin: auto;
+  background: skyblue;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 #ground {
     color: green;
@@ -16,22 +19,21 @@
     height: 100px;
     left: 0;
     position: absolute;
-    background-color: green; /* Also add background so it's visible */
+    background-color: green; 
 }
 
 html, body {
-  height: 100%;            /* Make sure body fills the viewport height */
-  margin: 0;               /* Remove default margins */
-  display: flex;           /* Enable flexbox */
-  justify-content: center; /* Center horizontally */
-  align-items: center;     /* Center vertically */
-  background: black;       /* Your existing background */
+  height: 100%;           
+  margin: 0;               
+  display: flex;           
+  justify-content: center;
+  align-items: center;    
+  background: black;      
 }
 .Block {
   position: absolute;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0,0,0,0.6);
-  transition: all 0.3s ease;
 }
 .block {
   position: absolute;
@@ -64,6 +66,43 @@ html, body {
    opacity: 0;
 }
 #counter{
+  font-size:30px;
+  font-family: sans-serif;
+}
+#health{
+  text-align: center;
+  font-size: 50px;
+}
+.tutorial {
+  padding: 20px;
+  background-color: black;
+  opacity: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+#level_counter{
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size:30px;
+  font-family: sans-serif;
+}
+#coin_counter{
+  position: absolute;
+  bottom:0;
+  font-size:30px;
+  font-family: sans-serif;
+}
+#food{
+  position:absolute;
+  right: 0;
+  bottom:0;
   font-size:30px;
   font-family: sans-serif;
 }
