@@ -11,10 +11,14 @@ const level_counter = document.getElementById("level_counter");
 const coin_counter = document.getElementById("coin_counter");
 const game = document.getElementById("game");
 const food = document.getElementById("food");
+const food_button = document.createElement("button");
+const ammo_button = document.createElement("button");
+const ka_ching = document.getElementById("ka-ching");
+
 let food_count = 5;
 tutorial.id = "tutorial";
 tutorial.className = "tutorial";
-tutorial.style.display = "none"; // initially hidden
+tutorial.style.display = "none";
 document.body.appendChild(tutorial);
 const gravity = 0.8;
 const speed = 8;
@@ -58,19 +62,30 @@ let keys = {
 player.style.height = playerHeight + "px";
 player.style.width = playerWidth + "px";
 ground.style.top = groundY + "px";
+ammo_button.innerText = "Buy Ammo";
+food_button.innerText = "Buy Food";
 
+ammo_button.className = "button";
+food_button.className = "button";
 window.addEventListener("keydown", (event) => {
   if (event.code in keys) keys[event.code] = true;
 });
 window.addEventListener("keyup", (event) => {
   if (event.code in keys) keys[event.code] = false;
 });
+window.addEventListener("keydown", (event) => {
+  if (event.code === "Backquote") {
+    currentLevel = parseInt(prompt("What level do you want to set it to"));
+    generateLevel(currentLevel);
+  }
+});
 class Block {
-  constructor(width, height, x, y, color, containerId = "game") {
+  constructor(width, height, x, y, color, containerId = "game", speed = 0) {
     this.width = width;
     this.height = height;
     this.x = x;
     this.y = y;
+    this.speed = speed;
     this.element = document.createElement("div");
     this.element.classList.add("Block");
     this.element.style.left = x + "px";
@@ -121,7 +136,7 @@ function check_shot() {
       if (enemy.health <= 0) {
         enemy.element.remove();
         enemies.splice(enemies.indexOf(enemy), 1);
-        coins+=1;
+        coins += 1;
       } else {
         enemy.element.innerText = enemy.health;
       }
@@ -139,31 +154,55 @@ function generateLevel(level) {
   for (const enemy of enemies) {
     enemy.element.remove();
   }
+  ammo_button.remove();
+  food_button.remove();
   enemies.length = 0;
-
+  game.style.backgroundImage = "";
+  game.style.backgroundColor = "skyblue";
+  tutorial.style.display = "none";
   if (level === 1) {
     tutorial.innerText =
       "Welcome to unnamed game, use A and D to move left and right, use W to jump";
     tutorial.style.display = "block";
-  }
-  else if (level === 2) {
+  } else if (level === 2) {
     tutorial.innerText =
       "Oh no! There is an obstruction in your path, use W to jump and get over it";
+    tutorial.style.display = "block";
     new Block(50, 200, 540, 420, "blue");
-  }
-  else if (level === 3) {
+  } else if (level === 3) {
     tutorial.innerText =
       "There is an enemy coming towards you!!! Quickly press and hold space to shoot your gun and kill the enemy";
+    tutorial.style.display = "block";
     new Enemy(10, 1020, 570, 2);
-  }
-  else if (level === 4) {
+  } else if (level === 4) {
     tutorial.innerText =
       "This time the enemy has a lot more health, shoot it and when you run out of bullets press R to reload.";
-    new Enemy(40, 1020, 570, 1);  
-  }
-  else if(level === 5) {
-    tutorial.innerText = "Congrats, you made it to the shop level, this level is safe from enemies and you can buy food and ammo for your journies";
-    game.style.backgroundImage = "url(images.jpeg)"
+    tutorial.style.display = "block";
+    new Enemy(40, 1020, 570, 1);
+  } else if (level % 5 === 0) {
+    tutorial.innerText =
+      "Congrats, you made it to the shop level, this level is safe from enemies and you can buy food and ammo for your journies";
+    tutorial.style.display = "block";
+    game.style.backgroundImage = "url(images.jpeg)";
+    ammo_button.innerText = "Buy Ammo";
+    food_button.innerText = "Buy Food";
+    ammo_button.className = "button";
+    food_button.className = "button";
+    ammo_button.style.position = "absolute";
+    ammo_button.style.top = "40vh";
+    ammo_button.style.left = "50vw";
+    food_button.style.position = "absolute";
+    food_button.style.top = "50vh";
+    food_button.style.left = "50vw";
+
+    game.appendChild(ammo_button);
+    game.appendChild(food_button);
+  } else if (level === 6) {
+    new Block(50, 570, 1030, 50, "blue");
+    new Block(50, 50, 100, 570, "purple");
+    new Block(50, 50, 500, 500, "saddleBrown");
+    new Block(50, 50, 200, 250, "gray");
+    new Block(100, 50, 200, 200, "pink", "game", 8);
   }
 }
 
@@ -171,7 +210,6 @@ function checkCollision() {
   sides.left = false;
   sides.right = false;
   sides.top = false;
-
   for (const block of blocks) {
     const playerRight = playerX + playerWidth;
     const playerBottom = playerY + playerHeight;
@@ -224,28 +262,74 @@ function checkCollision() {
     }
   }
 }
+ammo_button.onclick = function () {
+  if (coins >= 1) {
+    nonMag += 50;
+    coins -= 1;
+    ka_ching.currentTime = 0.3;
+    ka_ching.play();
+  }
+};
 
-new Block(100, 50, 300, 500, "red");
-new Block(100, 50, 500, 300, "red");
+food_button.onclick = function () {
+  if (coins >= 1) {
+    food_count += 1;
+    coins -= 1;
+    ka_ching.currentTime = 0.3;
+    ka_ching.play();
+  }
+};
+
 function update() {
-  if(food_count > 0 && keys.KeyF&& canEat){
-    food_count -=1;
-    health+=10;
+  if (food_count > 0 && keys.KeyF && canEat) {
+    food_count -= 1;
+    health += 10;
     canEat = false;
-    setTimeout(function() {canEat = true;
-}, 200)
-    
+    setTimeout(function () {
+      canEat = true;
+    }, 200);
   }
   coin_counter.innerText = "🪙" + coins;
-  if(health <= 0){
+  if (health <= 0) {
     health = 50;
-    generateLevel(currentLevel)
+    generateLevel(currentLevel);
   }
-  if (playerX > rightbound) {
+  if (playerX > rightbound && enemies.length === 0) {
     currentLevel += 1;
     generateLevel(currentLevel);
   }
-  for (const enemy of enemies) {
+  for (const block of blocks) {
+    block.x += block.speed;
+    block.element.style.left = block.x + "px";
+    if (block.x <= leftbound || block.x + block.width >= 1080) {
+      block.speed *= -1;
+    }
+  }
+  for (let enemy of enemies) {
+    enemy.x += enemy.speed;
+    enemy.element.style.left = enemy.x + "px";
+
+    for (const block of blocks) {
+      const enemyRight = enemy.x + 50;
+      const enemyBottom = enemy.y + 50;
+      const blockRight = block.x + block.width;
+      const blockBottom = block.y + block.height;
+
+      const isCollidingHorizontally =
+        enemyBottom > block.y &&
+        enemy.y < blockBottom &&
+        ((enemyRight > block.x && enemy.x < block.x && enemy.speed > 0) ||
+          (enemy.x < blockRight && enemyRight > blockRight && enemy.speed < 0));
+
+      if (isCollidingHorizontally) {
+        enemy.speed *= -1;
+        break;
+      }
+    }
+
+    if (enemy.x >= rightbound || enemy.x <= leftbound) {
+      enemy.speed *= -1;
+    }
     const playerRight = playerX + playerWidth;
     const playerBottom = playerY + playerHeight;
     const enemyRight = enemy.x + 50;
@@ -255,7 +339,7 @@ function update() {
       playerX < enemyRight &&
       playerRight > enemy.x &&
       playerY < enemyBottom &&
-      playerBottom > enemy.y;
+      playerBottom > enemy.y - 1;
 
     if (isTouching) {
       health -= 0.5;
@@ -264,15 +348,8 @@ function update() {
   }
   food.innerText = "🥩" + food_count;
   health_bar.innerText = health + "❤️";
-  for (let enemy of enemies) {
-    enemy.x += enemy.speed;
-    enemy.element.style.left = enemy.x + "px";
 
-    if (enemy.x >= rightbound || enemy.x <= leftbound) {
-      enemy.speed *= -1;
-    }
-  }
-  counter.innerText ="Bullet: " + mag + ", " + nonMag;
+  counter.innerText = "Bullet: " + mag + ", " + nonMag;
   checkCollision();
   level_counter.innerText = "Current Level: " + currentLevel;
   if (keys.Space && canShoot && mag >= 1) {
@@ -344,5 +421,5 @@ function update() {
   }
   requestAnimationFrame(update);
 }
-generateLevel(1);
+generateLevel(currentLevel);
 update();
