@@ -100,11 +100,12 @@ class Block {
   }
 }
 class Enemy {
-  constructor(health, x, y, speed, containerId = "game") {
+  constructor(health, x, y, speed, damage, containerId = "game") {
     this.health = health;
     this.speed = speed;
     this.x = x;
     this.y = y;
+    this.damage = damage;
     this.element = document.createElement("div");
     this.element.classList.add("Enemy");
     this.element.style.left = x + "px";
@@ -123,23 +124,32 @@ class Enemy {
   }
 }
 function check_shot() {
-  for (enemy of enemies) {
-    if (
-      (gun.style.transform === "scaleX(1)" &&
-        enemy.x > playerX &&
-        enemy.y === playerY) ||
-      (gun.style.transform === "scaleX(-1)" &&
-        enemy.x < playerX &&
-        enemy.y === playerY)
-    ) {
-      enemy.health -= 1;
-      if (enemy.health <= 0) {
-        enemy.element.remove();
-        enemies.splice(enemies.indexOf(enemy), 1);
-        coins += 1;
-      } else {
-        enemy.element.innerText = enemy.health;
+  let nearestEnemy = null;
+  let nearestDistance = Infinity;
+
+  for (let enemy of enemies) {
+    if (enemy.y === playerY) {
+      if (
+        (gun.style.transform === "scaleX(1)" && enemy.x > playerX) ||
+        (gun.style.transform === "scaleX(-1)" && enemy.x < playerX)
+      ) {
+        const distance = Math.abs(enemy.x - playerX);
+        if (distance < nearestDistance) {
+          nearestEnemy = enemy;
+          nearestDistance = distance;
+        }
       }
+    }
+  }
+
+  if (nearestEnemy) {
+    nearestEnemy.health -= 1;
+    if (nearestEnemy.health <= 0) {
+      nearestEnemy.element.remove();
+      enemies.splice(enemies.indexOf(nearestEnemy), 1);
+      coins += 1;
+    } else {
+      nearestEnemy.element.innerText = nearestEnemy.health;
     }
   }
 }
@@ -173,12 +183,12 @@ function generateLevel(level) {
     tutorial.innerText =
       "There is an enemy coming towards you!!! Quickly press and hold space to shoot your gun and kill the enemy";
     tutorial.style.display = "block";
-    new Enemy(10, 1020, 570, 2);
+    new Enemy(10, 1020, 570, 2, 0.5);
   } else if (level === 4) {
     tutorial.innerText =
       "This time the enemy has a lot more health, shoot it and when you run out of bullets press R to reload.";
     tutorial.style.display = "block";
-    new Enemy(40, 1020, 570, 1);
+    new Enemy(40, 1020, 570, 1, 0.5);
   } else if (level % 5 === 0) {
     tutorial.innerText =
       "Congrats, you made it to the shop level, this level is safe from enemies and you can buy food and ammo for your journies";
@@ -203,6 +213,50 @@ function generateLevel(level) {
     new Block(50, 50, 500, 500, "saddleBrown");
     new Block(50, 50, 200, 250, "gray");
     new Block(100, 50, 200, 200, "pink", "game", 8);
+  } else if (currentLevel === 7) {
+    tutorial.innerText =
+      "Some of the gaps are safe some are not, exit at the top right corner and choose wisely";
+    tutorial.style.display = "block";
+    new Enemy(1, 49, 470, 0, 50);
+    new Block(313, 50, 148, 470, "blue");
+    new Enemy(1, 510, 470, 0, 50);
+    new Block(313, 50, 609, 470, "blue");
+    new Enemy(1, 971, 470, 0, 0);
+    new Block(10, 570, 1070, 50, "gray");
+    new Block(258, 50, 0, 320, "blue");
+    new Enemy(1, 307, 320, 0, 50);
+    new Block(258, 50, 406, 320, "blue");
+    new Enemy(1, 713, 320, 0, 0);
+    new Block(258, 50, 812, 320, "blue");
+    new Enemy(1, 49, 170, 0, 50);
+    new Block(313, 50, 148, 170, "blue");
+    new Enemy(1, 510, 170, 0, 0);
+    new Block(313, 50, 609, 170, "blue");
+    new Enemy(1, 971, 170, 0, 50);
+  } else if (currentLevel === 8) {
+    new Block(930, 50, 0, 520, "blue");
+    new Enemy(10 ** 100, 0, 470, 6, 50);
+    new Block(930, 50, 150, 420, "blue");
+    new Enemy(10 ** 100, 979, 370, 6, 50);
+    new Block(930, 50, 0, 320, "blue");
+    new Enemy(10 ** 100, 0, 270, 6, 50);
+    new Block(930, 50, 150, 220, "blue");
+  } else if (currentLevel === 9) {
+    new Block(300, 50, 100, 470, "blue", "game", -2);
+    new Enemy(1, 150, 420, 0, 10);
+    new Block(300, 50, 600, 320, "blue", "game", 2);
+    new Enemy(1, 650, 270, 0, 10);
+    new Block(300, 50, 100, 170, "blue", "game", 2);
+    new Enemy(1, 150, 120, 0, 10);
+    new Block(300, 50, 600, 70, "blue", "game", -2);
+    new Enemy(1, 650, 20, 0, 10);
+    new Block(10, 570, 1070, 50, "gray");
+  } else if (currentLevel === 11) {
+    new Block(50, 50, 540, 470, "yellow", "game", 3);
+     new Block(50, 50, 540, 470, "yellow", "game", -3);
+    for(let i = 0; i < 10; i++){
+      setTimeout(function() {new Enemy(20, 1000, 570, 1, 0.5);}, 1000*i);
+    }
   }
 }
 
@@ -225,7 +279,7 @@ function checkCollision() {
     if (isColliding) {
       if (
         velocity > 0 &&
-        playerBottom > block.y &&
+        playerBottom >= block.y &&
         playerY < block.y &&
         playerRight > block.x &&
         playerX < blockRight
@@ -236,7 +290,7 @@ function checkCollision() {
         sides.top = true;
       } else {
         if (
-          playerRight > block.x &&
+          playerRight >= block.x &&
           playerX < block.x &&
           playerBottom > block.y &&
           playerY < blockBottom
@@ -244,7 +298,7 @@ function checkCollision() {
           sides.right = true;
         }
         if (
-          playerX < blockRight &&
+          playerX <= blockRight &&
           playerRight > blockRight &&
           playerBottom > block.y &&
           playerY < blockBottom
@@ -292,9 +346,16 @@ function update() {
   coin_counter.innerText = "🪙" + coins;
   if (health <= 0) {
     health = 50;
+    nonMag = 270;
+    mag = 30;
     generateLevel(currentLevel);
   }
-  if (playerX > rightbound && enemies.length === 0) {
+  if (
+    playerX > rightbound &&
+    (enemies.length === 0 ||
+      currentLevel === 7 ||
+      (currentLevel === 8 && playerY < 200))
+  ) {
     currentLevel += 1;
     generateLevel(currentLevel);
   }
@@ -342,7 +403,7 @@ function update() {
       playerBottom > enemy.y - 1;
 
     if (isTouching) {
-      health -= 0.5;
+      health -= enemy.damage;
       if (health < 0) health = 0;
     }
   }
